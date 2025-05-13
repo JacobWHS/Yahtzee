@@ -1,2 +1,4 @@
-# Yahtzee
-I GAVE this repo a DESCRIPTION to show that I put EFFORT into it.
+## "Yahtzee" - trust me bro edition
+this is the REAL yahtzee, don't believe me? ok.....
+I....
+DON'T REMEMBER ASKING 😎😎😎😎
