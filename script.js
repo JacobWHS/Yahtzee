@@ -25,9 +25,8 @@ function rollDice(){
     let d = 0;
     for (let die = 1; die <= indices.length; die++){
         d = Math.floor(Math.random() * 6) + 1;
-        hand[indices[die - 1]] = d;
+        hand[indices[die-1]-1] = d; // this
     }
-    alert(" - curr " + hand.toString());
 }
 
 function selRerolls(){
