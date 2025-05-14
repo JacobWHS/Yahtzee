@@ -1,18 +1,24 @@
 var hand = [9, 0, 0, 0, 0];
-var indices = [1, 2, 3, 4, 5];
-
+var rounds = 2; // should be 14 when done testing
 function main(){
-    for (let rounds = 1; rounds <= 3; rounds++){
-        indices = [1, 2, 3, 4, 5];
-        for (let roll = 1; roll <= 3; roll++){
-            rollDice();
-            selRerolls();
-        }
+    for (let round = 1; round <= rounds; round++){ 
+        playRound(round)
     //     storeHand();
     //     roundReset();
     // }
     // calcScore();
+    }
 }
+
+function playRound(round) {
+    let indices = [0, 1, 2, 3, 4]; // first roll
+    alert("Round " + round + " of " + rounds + ": \n");
+    for (let roll = 1; roll <= 3; roll++){
+        rollDice(indices);
+        alert("Your hand is: " + hand.toString());
+        if (roll < 3 ) indices = selRerolls(roll);
+    }
+    alert(" Where will you score:  " + hand.toString());
 }
 
 /**  rollDice
@@ -21,23 +27,23 @@ function main(){
  * @return: none
  */
 
-function rollDice(){
+function rollDice(indices){
     let d = 0;
-    for (let die = 1; die <= indices.length; die++){
+    for (let die = 0; die < indices.length; die++){
         d = Math.floor(Math.random() * 6) + 1;
-        hand[indices[die-1]-1] = d; // this
+        hand[indices[die]] = d; // this
     }
 }
 
-function selRerolls(){
-    alert(" - prev " + hand.toString());
+function selRerolls(roll){
+
     indices = [];
-    let reroll = prompt("how many dice");
-    for (let roll = 1; roll <= reroll; roll++){
-        let which = prompt("which die?");
-        indices.push(which);
+    let rerolls = prompt("Reroll "+ roll + " of 2: how many dice?");
+    for (let roll = 1; roll <= rerolls; roll++){
+        let which = prompt("Die " + roll + " of " + rerolls + ": Which die?");
+        indices.push(which-1);
     }
-    alert(hand.toString());
+    return indices;
 }
 
 function holdDice(){
