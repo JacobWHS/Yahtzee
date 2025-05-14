@@ -41,7 +41,7 @@ function selRerolls(roll){
     let rerolls = prompt("Reroll "+ roll + " of 2: how many dice?");
     for (let roll = 1; roll <= rerolls; roll++){
         let which = prompt("Die " + roll + " of " + rerolls + ": Which die?");
-        indices.push(which-1); // shift from user to array counting
+        indices.push(which - 1); // shift from user to array counting
     }
     return indices;
 }
