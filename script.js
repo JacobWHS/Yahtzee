@@ -56,6 +56,13 @@ class DiceCup{
      */
     function reset() {  // To Do
     }
+
+    /* store hand in scoreboard
+     * @param: none;
+     * @return: none;
+     */
+    function storeHand() {  // To Do
+    }
     
 } // End of Class Definition
 
@@ -65,28 +72,18 @@ function main(){
     // If multiplayer, need to define a collection for the objects; leave off for now 
     for (let round = 1; round <= rounds; round++){ 
         playRound(round);
-    //     storeHand();
-    //     roundReset();
-    // }
-    // calcScore();
     }
 
     function playRound(round) {  // Note: defining function inside Main to provide access to objects
     alert("Round " + round + " of " + rounds + ": \n");
     jacob.reset();
     jacob.roll();
-    
-    for (let roll = 1; roll <= 3; roll++){
-        rollDice(indices);
-        alert("Your hand is: " + hand.toString());
-        if (roll < 3 ) indices = selRerolls(roll); // you do not reroll the third roll
-    }
-    alert(" Where will you score:  " + hand.toString());
+    jacob.reroll();
+    jacob.reroll();
+    jacob.storeHand();   
     }
     
 }
-
-
 
 
 /**  rollDice
@@ -95,26 +92,22 @@ function main(){
  * @return: none
  */
 
-function rollDice(indices){
-    let d = 0;
-    for (let die = 0; die < indices.length; die++){
-        d = Math.floor(Math.random() * 6) + 1;
-        hand[indices[die]] = d; // this
-    }
-}
+// function rollDice(indices){
+//     let d = 0;
+//     for (let die = 0; die < indices.length; die++){
+//         d = Math.floor(Math.random() * 6) + 1;
+//         hand[indices[die]] = d; // this
+//     }
+// }
 
-function selRerolls(roll){
+// function selRerolls(roll){
+//     indices = [];
+//     let rerolls = prompt("Reroll "+ roll + " of 2: Which dice? (<dice1>, <dice2>");
+//     let temp = rerolls.split(",");
+//     for (let die = 0; die < temp.length; die++){
+//         indices.push(parseInt(temp[die]) - 1);
+//     }
+//     console.log("rerolls " + indices.toString());
+//     return indices;
+// }
 
-    indices = [];
-    let rerolls = prompt("Reroll "+ roll + " of 2: Which dice? (<dice1>, <dice2>");
-    let temp = rerolls.split(",");
-    for (let die = 0; die < temp.length; die++){
-        indices.push(parseInt(temp[die]) - 1);
-    }
-    console.log("rerolls " + indices.toString());
-    return indices;
-}
-
-function holdDice(){
-    alert("holdDice()");
-}
