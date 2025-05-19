@@ -11,6 +11,8 @@ function main(){
     }
 }
 
+
+// test
 class diceCup{
     hand = [0, 0, 0, 0, 0];
     name;
