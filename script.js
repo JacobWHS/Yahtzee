@@ -1,9 +1,8 @@
-var hand = [0, 0, 0, 0, 0];
 var scoreboard = [["Ones",0],["Twos",0],["Threes",0],["Fours",0],["Fives",0],["Sixes",0],["Upper Section Bonus",0],["Three Of a Kind",0],["Four Of a Kind",0],["Full House",0],["Small Straight",0],["Large Straight",0],["Chance",0],["Yahtzee",0]];
 var rounds = 2; // should be 14 when done testing
 function main(){
     for (let round = 1; round <= rounds; round++){ 
-        playRound(round)
+        playRound(round);
     //     storeHand();
     //     roundReset();
     // }
@@ -11,14 +10,11 @@ function main(){
     }
 }
 
-
-// test
-class diceCup{
-    hand = [0, 0, 0, 0, 0];
-    name;
-    hold = [];
+class DiceCup{
     constructor(name){
         this.name = name;
+        this.hand = [0, 0, 0, 0, 0];
+        this.hold = [];
     }
     toggleHold(index){
         let position = this.hold.indexOf(index);
@@ -31,7 +27,7 @@ class diceCup{
     }
     roll(){
         let d = 0;
-        for (let die = 0; die < this.hand.length; die++){
+        for (let die = 0; die < 5; die++){
             if (!this.isHeld(die)){
                 d = Math.floor(Math.random() * 6) + 1;
                 this.hand[die] = d; // this
@@ -45,8 +41,8 @@ class diceCup{
 }
 
 function playRound(round) {
-    let indices = [0, 1, 2, 3, 4]; // first roll
     alert("Round " + round + " of " + rounds + ": \n");
+    const DiceCup round = new DiceCup(round);
     for (let roll = 1; roll <= 3; roll++){
         rollDice(indices);
         alert("Your hand is: " + hand.toString());
