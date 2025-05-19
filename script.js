@@ -1,4 +1,5 @@
-var hand = [9, 0, 0, 0, 0];
+var hand = [0, 0, 0, 0, 0];
+var scoreboard = [["Ones",0],["Twos",0],["Threes",0],["Fours",0],["Fives",0],["Sixes",0],["Upper Section Bonus",0],["Three Of a Kind",0],["Four Of a Kind",0],["Full House",0],["Small Straight",0],["Large Straight",0],["Chance",0],["Yahtzee",0]];
 var rounds = 2; // should be 14 when done testing
 function main(){
     for (let round = 1; round <= rounds; round++){ 
@@ -7,6 +8,37 @@ function main(){
     //     roundReset();
     // }
     // calcScore();
+    }
+}
+
+class diceCup{
+    hand = [0, 0, 0, 0, 0];
+    name;
+    hold = [];
+    constructor(name){
+        this.name = name;
+    }
+    toggleHold(index){
+        let position = this.hold.indexOf(index);
+        if (position != -1){
+            this.hold.splice(position);
+        }
+        else{
+            this.hold.push(index);
+        }
+    }
+    roll(){
+        let d = 0;
+        for (let die = 0; die < this.hand.length; die++){
+            if (!this.isHeld(die)){
+                d = Math.floor(Math.random() * 6) + 1;
+                this.hand[die] = d; // this
+            }
+
+        }
+    }
+    isHeld(index){
+        return this.hold.includes(index);
     }
 }
 
@@ -38,11 +70,12 @@ function rollDice(indices){
 function selRerolls(roll){
 
     indices = [];
-    let rerolls = prompt("Reroll "+ roll + " of 2: how many dice?");
-    for (let roll = 1; roll <= rerolls; roll++){
-        let which = prompt("Die " + roll + " of " + rerolls + ": Which die?");
-        indices.push(which - 1); // shift from user to array counting
+    let rerolls = prompt("Reroll "+ roll + " of 2: Which dice? (<dice1>, <dice2>");
+    let temp = rerolls.split(",");
+    for (let die = 0; die < temp.length; die++){
+        indices.push(parseInt(temp[die]) - 1);
     }
+    console.log("rerolls " + indices.toString());
     return indices;
 }
 
