@@ -10,11 +10,11 @@ function main(){
 
     function playRound(round) {  // Note: defining function inside Main to provide access to objects
     alert("Round " + round + " of " + rounds + ": \n");
-    // jacob.reset();
+    cup1.reset();
     cup1.roll();
-    // jacob.reroll();
-    // jacob.reroll();
-    // jacob.storeHand();   
+    cup1.reroll();
+    cup1.reroll();
+    // cup1.storeHand();   
     }
     
 }
@@ -55,7 +55,7 @@ class DiceCup{
     
     /* check if die is being held 
      * @param: index;
-     * @return: none;
+     * @return: boolean;
      */
     isHeld(index){
         return this.hold.includes(index);
@@ -66,6 +66,14 @@ class DiceCup{
      * @return: none;
      */
     reroll(){
+        this.reset();
+        let toReRoll = prompt("Which dice shall be held? (Ex: 1,3)");
+        let preHold = toReRoll.split(",");
+        for (let die = 0; die < preHold.length; die++){
+            this.hold.push(preHold[die] - 1);
+        }
+        console.log(" - " + this.hold.toString());
+        this.roll();
     }
     
     /* clear all holds 
@@ -73,21 +81,46 @@ class DiceCup{
      * @return: none;
      */
     reset() {  // To Do
+        this.hold = [];
+    }
+    
+} // End of Class Definition
+
+/* Class Definition for ScoreBoard */
+    class ClassB {
+      constructor(classA) {
+        this.classA = classA;
+      }
+    
+      methodB() {
+        // Bind methodA to the instance of ClassA
+        const boundMethodA = this.classA.methodA.bind(this.classA);
+        return boundMethodA();
+      }
+    }
+    
+    const instanceA = new ClassA();
+    const instanceB = new ClassB(instanceA);
+    console.log(instanceB.methodB()); // Output: Hello from ClassA
+
+
+class ScoreBoard{
+    constructor(name, cupName){
+        this.catBoxes = ["Ones","Twos","Threes","Fours","Fives","Sixes","Upper Section Bonus","Three Of a Kind","Four Of a Kind","Full House","Small Straight","Large Straight","Chance","Yahtzee"];
+        this.name = name;
+        this.board = [];
     }
 
     /* store hand in scoreboard
      * @param: none;
      * @return: none;
      */
-    storeHand() {  // To Do
-    }
-    
-} // End of Class Definition
-
-/* Class Definition for ScoreBoard */
-class ScoreNBoard{
-    constructor(name){
-        this.name = name;
-        this.board = [["Ones",0],["Twos",0],["Threes",0],["Fours",0],["Fives",0],["Sixes",0],["Upper Section Bonus",0],["Three Of a Kind",0],["Four Of a Kind",0],["Full House",0],["Small Straight",0],["Large Straight",0],["Chance",0],["Yahtzee",0]];
+    storeHand(cat) {  // To Do
+        let score = 0;
+        let target = this.catBoxes.indexOf(cat);
+        if (target < 6){
+        // Add named values
+            target++;
+        }
     }
 }
