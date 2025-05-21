@@ -1,3 +1,5 @@
+const categories = ["ones","twos","threes","fours","fives","sixes","upper section bonus","three of a kind","four of a kind","full house","small straight","large straight","chance","yahtzee"];
+
 /* Runs the game */
 function main(){
     let rounds = 1; // should be 14 when done testing
@@ -19,7 +21,12 @@ function main(){
         cup.resetHolds();
         console.log("Your hand to score: "+ cup.getHand().toString());  
         let category = prompt("Which category? ones, etc");
-        jacob.scoreHand(category);
+        while (!categories.includes(category)){
+            category = prompt("Invalid category, please try again.");
+        }
+        while (!jacob.scoreHand(category)){
+            category = prompt("This category has already been scored, try another.");
+        }
     }
     
 }
@@ -132,8 +139,10 @@ class ScoreBoard{
     scoreHand(category){
         let hand = this.getHand();
         let score = 0;
-        const categories = ["ones","twos","threes","fours","fives","sixes","upper section bonus","three of a kind","four of a kind","full house","small straight","large straight","chance","yahtzee"];   
-        if (categories.indexOf(category)<6) {
+        if (this.board.hasCategory()){
+            return false;
+        }
+        else if (categories.indexOf(category)<6) {
             let counting = categories.indexOf(category)+1;
             for (let die = 0; die < 6; die++){
                 if (hand[die] == counting) score += counting;
@@ -143,5 +152,6 @@ class ScoreBoard{
         this.board.push(newScore);
         let latest = this.board.length-1;
         console.log("Scored: "+ this.board[latest].toString());
+        return true;
     }
 } // End of Class Definition
