@@ -139,6 +139,9 @@ class ScoreBoard{
                 if (hand[die] == counting) score += counting;
             }
         }
-        console.log("Score in " + category + " is now " + score);
+        let newScore = [category, score];
+        this.board.push(newScore);
+        let latest = this.board.length-1;
+        console.log("Scored: "+ this.board[latest].toString());
     }
 } // End of Class Definition
