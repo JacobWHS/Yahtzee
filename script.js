@@ -1,23 +1,105 @@
-var hand = [0, 0, 0, 0, 0];
-var scoreboard = [["Ones",0],["Twos",0],["Threes",0],["Fours",0],["Fives",0],["Sixes",0],["Upper Section Bonus",0],["Three Of a Kind",0],["Four Of a Kind",0],["Full House",0],["Small Straight",0],["Large Straight",0],["Chance",0],["Yahtzee",0]];
-var rounds = 2; // should be 14 when done testing
+/* Runs the game */
 function main(){
+    let rounds = 1; // should be 14 when done testing
+    const cup1 = new DiceCup("cup1"); // Proper syntax = const if we always point to the same object
+    // const cup2 = new DiceCup("cup2"); 
+    const jacob = new ScoreBoard("jacob", cup1);
+    // const bram = new ScoreBoard("bram", cup2);
+    // If multiplayer, need to define a collection for the objects; leave off for now 
     for (let round = 1; round <= rounds; round++){ 
-        playRound(round)
-    //     storeHand();
-    //     roundReset();
-    // }
-    // calcScore();
+        playRound(round,cup1,jacob);
+        // playRound(round,cup2,bram);
     }
+
+    function playRound(round, cup, board) {  // Note: defining function inside Main to provide access to objects
+        console.log("Round " + round + " of " + rounds + " \n");
+        console.log(board.getName() + " roll 1: "+ cup.roll());
+        console.log(board.getName() + " reroll 1: "+ cup.getHolds());
+        console.log(board.getName() + " reroll 2: "+ cup.getHolds());
+        cup.resetHolds();
+        console.log("Your hand to score: "+ cup.getHand().toString());  
+        let category = prompt("Which category? ones, etc");
+        jacob.scoreHand(category);
+    }
+    
 }
 
-class diceCup{
-    hand = [0, 0, 0, 0, 0];
-    name;
-    hold = [];
+/* Class definition for DiceCup */
+class DiceCup{
     constructor(name){
         this.name = name;
+        this.hand = [0, 0, 0, 0, 0];
+        this.hold = [];
     }
+    /* get Hand 
+     * @param: none;
+     * @return: hand array;
+     */
+    getHand(){
+        return this.hand;
+    }
+    
+    /* roll all dice 
+     * @param: none;
+     * @return: none;
+     */
+    roll(){
+        for (let die = 0; die < 5; die++){
+            this.hand[die] = Math.floor(Math.random() * 6) + 1;
+        }
+        return this.hand.toString();
+    }
+
+     /* roll held dice 
+     * @param: none;
+     * @return: none;
+     */
+    reroll(){
+        for (let die = 0; die < 5; die++){
+            if (!this.isHeld(die)){
+                this.hand[die] = Math.floor(Math.random() * 6) + 1;
+            }
+        }
+        return this.hand.toString();
+    }
+    
+    /* check if die is being held 
+     * @param: index;
+     * @return: none;
+     */
+    isHeld(index){
+        let held = this.hold.includes(index+1);
+        return held;
+    }
+
+    /* determine dice to reroll with user input 
+     * @param: none;
+     * @return: none;
+     */
+    getHolds(){
+        this.resetHolds();
+        let which = prompt("Hold which? 1,2,4 or 0");
+        let holds = which.split(',').map(Number);
+        if (holds[0]!= 0 || holds.length>0) {
+            this.hold = holds;
+            console.log("Holding: "+this.hold.toString());
+        }
+        else console.log("No holds.")
+        return this.reroll();
+    }
+    
+    /* clear all holds 
+     * @param: none;
+     * @return: none;
+     */
+    resetHolds() { 
+        for (let holds = 0; holds < this.hold.length; holds++){
+           this.hold.splice(holds,1); 
+        }
+    }
+
+
+    /* toggle hold state based on index, so die 1 is at index 0 */
     toggleHold(index){
         let position = this.hold.indexOf(index);
         if (position != -1){
@@ -26,59 +108,40 @@ class diceCup{
         else{
             this.hold.push(index);
         }
+    }    
+
+} // End of Class Definition
+
+/* Class Definition for ScoreBoard */
+class ScoreBoard{
+        constructor(name, cup){
+        this.name = name;
+        this.cup = cup;
+        this.getHand = this.getHand.bind(this);
+        this.board = [];
+     }
+
+    getName(){
+        return this.name;
     }
-    roll(){
-        let d = 0;
-        for (let die = 0; die < this.hand.length; die++){
-            if (!this.isHeld(die)){
-                d = Math.floor(Math.random() * 6) + 1;
-                this.hand[die] = d; // this
+
+    getHand(){
+        return this.cup.getHand();
+    }
+
+    scoreHand(category){
+        let hand = this.getHand();
+        let score = 0;
+        const categories = ["ones","twos","threes","fours","fives","sixes","upper section bonus","three of a kind","four of a kind","full house","small straight","large straight","chance","yahtzee"];   
+        if (categories.indexOf(category)<6) {
+            let counting = categories.indexOf(category)+1;
+            for (let die = 0; die < 6; die++){
+                if (hand[die] == counting) score += counting;
             }
-
         }
+        let newScore = [category, score];
+        this.board.push(newScore);
+        let latest = this.board.length-1;
+        console.log("Scored: "+ this.board[latest].toString());
     }
-    isHeld(index){
-        return this.hold.includes(index);
-    }
-}
-
-function playRound(round) {
-    let indices = [0, 1, 2, 3, 4]; // first roll
-    alert("Round " + round + " of " + rounds + ": \n");
-    for (let roll = 1; roll <= 3; roll++){
-        rollDice(indices);
-        alert("Your hand is: " + hand.toString());
-        if (roll < 3 ) indices = selRerolls(roll); // you do not reroll the third roll
-    }
-    alert(" Where will you score:  " + hand.toString());
-}
-
-/**  rollDice
- * Rolls one die, stores value
- * @param: array of indices
- * @return: none
- */
-
-function rollDice(indices){
-    let d = 0;
-    for (let die = 0; die < indices.length; die++){
-        d = Math.floor(Math.random() * 6) + 1;
-        hand[indices[die]] = d; // this
-    }
-}
-
-function selRerolls(roll){
-
-    indices = [];
-    let rerolls = prompt("Reroll "+ roll + " of 2: Which dice? (<dice1>, <dice2>");
-    let temp = rerolls.split(",");
-    for (let die = 0; die < temp.length; die++){
-        indices.push(parseInt(temp[die]) - 1);
-    }
-    console.log("rerolls " + indices.toString());
-    return indices;
-}
-
-function holdDice(){
-    alert("holdDice()");
-}
+} // End of Class Definition
