@@ -139,7 +139,7 @@ class ScoreBoard{
     scoreHand(category){
         let hand = this.getHand();
         let score = 0;
-        if (this.board.hasCategory()){
+        if (this.board.hasCategory(category)){
             return false;
         }
         else if (categories.indexOf(category)<6) {
@@ -153,5 +153,11 @@ class ScoreBoard{
         let latest = this.board.length-1;
         console.log("Scored: "+ this.board[latest].toString());
         return true;
+    }
+    hasCategory(category){
+        for (let i = 0; i < this.board.length; i++){ // i = index
+            if (board[i].includes(category)) return true;
+        } 
+        return false;
     }
 } // End of Class Definition
