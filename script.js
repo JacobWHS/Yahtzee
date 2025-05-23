@@ -121,7 +121,7 @@ class DiceCup{
 
 /* Class Definition for ScoreBoard */
 class ScoreBoard{
-        constructor(name, cup){
+    constructor(name, cup){
         this.name = name;
         this.cup = cup;
         this.getHand = this.getHand.bind(this);
@@ -139,7 +139,7 @@ class ScoreBoard{
     scoreHand(category){
         let hand = this.getHand();
         let score = 0;
-        if (this.board.hasCategory(category)){
+        if (this.hasCategory(category)){
             return false;
         }
         else if (categories.indexOf(category)<6) {
@@ -148,15 +148,29 @@ class ScoreBoard{
                 if (hand[die] == counting) score += counting;
             }
         }
+        else {
+            switch (category){
+                case "":
+                    
+                    break;
+                case "":
+                    break;
+                default:
+                    break;
+            }
+        }
         let newScore = [category, score];
         this.board.push(newScore);
         let latest = this.board.length-1;
-        console.log("Scored: "+ this.board[latest].toString());
+        console.log("Scored: " + this.board[latest].toString());
         return true;
+    }
+    scoreStraight(){
+        for (let i = 0; i == 5; i++){}
     }
     hasCategory(category){
         for (let i = 0; i < this.board.length; i++){ // i = index
-            if (board[i].includes(category)) return true;
+            if (this.board[i].includes(category)) return true;
         } 
         return false;
     }
