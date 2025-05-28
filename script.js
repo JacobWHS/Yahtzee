@@ -151,31 +151,19 @@ class ScoreBoard{
         else {
             switch (category){
                 case "three of a kind":
-                    for (let die = 0; die < 6; die++){
-                        hand[die] += score;
-                    }
+                    
                     break;
                 case "four of a kind":
-                    for (let die = 0; die < 6; die++){
-                        hand[die] += score;
-                    }
                     break;
                 case "full house":
-                    25 += score;
                     break;
                 case "small straight":
-                    30 += score;
                     break;
                 case "large straight":
-                    40 += score;
                     break;
                 case "yahtzee":
-                    40 += score;
                     break;
                 case "chance":
-                    for (let die = 0; die < 6; die++){
-                        hand[die] += score;
-                    }
                     break;
                 default: // this should probably be the bonus(?)
                     break;
