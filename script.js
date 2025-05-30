@@ -142,31 +142,35 @@ class ScoreBoard{
         if (this.hasCategory(category)){
             return false;
         }
-        else if (categories.indexOf(category)<6) {
+        else if (categories.indexOf(category) < 6) {
             let counting = categories.indexOf(category)+1;
-            for (let die = 0; die < 6; die++){
+            for (let die = 0; die == 4; die++){
+                console.log(" - scoreHand die " + die + " - " + hand[die]);
                 if (hand[die] == counting) score += counting;
             }
         }
         else {
+            console.log(" - Selected category " + category);
             switch (category){
-                case "three of a kind":
-                    
-                    break;
-                case "four of a kind":
-                    break;
                 case "full house":
+                    score = 25;
                     break;
                 case "small straight":
+                    score = 30;
                     break;
                 case "large straight":
+                    score = 40;
                     break;
                 case "yahtzee":
+                    score = 50;
                     break;
+                case "three of a kind":
+                case "four of a kind":
                 case "chance":
-                    break;
-                default: // this should probably be the bonus(?)
-                    break;
+                    score = this.addUpDice(hand);
+                // default: // This is chance, 3 and 4 of a kind.
+                //     console.log(" - adding " + score);
+                //     break;
             }
         }
         let newScore = [category, score];
@@ -183,5 +187,15 @@ class ScoreBoard{
             if (this.board[i].includes(category)) return true;
         } 
         return false;
+    }
+    addUpDice(hand){
+        let score = 0;
+        console.log("addUpDice():");
+        for (let die = 0; die < 5; die++){
+            console.log(" - addUpDice() for loop");
+            console.log(" - add Up Dice " + die + " - " + hand[die]);
+            score += hand[die];
+        }
+        return score;
     }
 } // End of Class Definition
