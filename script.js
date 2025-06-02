@@ -2,7 +2,7 @@ const categories = ["ones","twos","threes","fours","fives","sixes","upper sectio
 
 /* Runs the game */
 function main(){
-    let rounds = 1; // should be 14 when done testing
+    let rounds = 14; // should be 14 when done testing
     const cup1 = new DiceCup("cup1"); // Proper syntax = const if we always point to the same object
     // const cup2 = new DiceCup("cup2"); 
     const jacob = new ScoreBoard("jacob", cup1);
@@ -85,13 +85,13 @@ class DiceCup{
      */
     getHolds(){
         this.resetHolds();
-        let which = prompt("Hold which? 1,2,4 or 0");
+        let which = prompt("Hold which? (Format: 1,2,4 or 0 to reroll all)");
         let holds = which.split(',').map(Number);
         if (holds[0]!= 0 || holds.length>0) {
             this.hold = holds;
-            console.log("Holding: "+this.hold.toString());
+            // console.log("Holding: "+this.hold.toString());
         }
-        else console.log("No holds.")
+        // else console.log("No holds.")
         return this.reroll();
     }
     
@@ -144,8 +144,7 @@ class ScoreBoard{
         }
         else if (categories.indexOf(category) < 6) {
             let counting = categories.indexOf(category)+1;
-            for (let die = 0; die == 4; die++){
-                console.log(" - scoreHand die " + die + " - " + hand[die]);
+            for (let die = 0; die < 5; die++){
                 if (hand[die] == counting) score += counting;
             }
         }
@@ -174,6 +173,7 @@ class ScoreBoard{
             }
         }
         let newScore = [category, score];
+        console.log("Scoring: " + category + " Score: " + score);
         this.board.push(newScore);
         let latest = this.board.length-1;
         console.log("Scored: " + this.board[latest].toString());
