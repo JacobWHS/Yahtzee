@@ -135,7 +135,17 @@ class ScoreBoard{
     getHand(){
         return this.cup.getHand();
     }
-
+    valSmStraight(){
+        let hand = this.getHand().sort;
+        hand = hand.toString();
+        switch (hand){
+            case hand.includes("1,2,3,4"):
+            case hand.includes("2,3,4,5"):
+            case hand.includes("3,4,5,6"):
+                return true;
+        }
+        return false;
+    }
     scoreHand(category){
         let hand = this.getHand();
         let score = 0;
@@ -155,7 +165,8 @@ class ScoreBoard{
                     score = 25;
                     break;
                 case "small straight":
-                    score = 30;
+                    if (valSmStraight()) score = 30;
+                    else console.log("TAKEN, score another.");
                     break;
                 case "large straight":
                     score = 40;
@@ -178,9 +189,6 @@ class ScoreBoard{
         let latest = this.board.length-1;
         console.log("Scored: " + this.board[latest].toString());
         return true;
-    }
-    scoreStraight(){
-        for (let i = 0; i == 5; i++){}
     }
     hasCategory(category){
         for (let i = 0; i < this.board.length; i++){ // i = index
