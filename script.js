@@ -15,9 +15,9 @@ function main(){
 
     function playRound(round, cup, board) {  // Note: defining function inside Main to provide access to objects
         console.log("Round " + round + " of " + rounds + " \n");
-        console.log(board.getName() + " roll 1: "+ cup.roll());
-        console.log(board.getName() + " reroll 1: "+ cup.getHolds());
-        console.log(board.getName() + " reroll 2: "+ cup.getHolds());
+        console.log(" - " + board.getName() + " roll 1: "+ cup.roll());
+        console.log(" - " + board.getName() + " reroll 1: "+ cup.getHolds());
+        console.log(" - " + board.getName() + " reroll 2: "+ cup.getHolds());
         cup.resetHolds();
         console.log("Your hand to score: "+ cup.getHand().toString());  
         let category = prompt("Which category? ones, etc");
@@ -126,7 +126,7 @@ class ScoreBoard{
         this.cup = cup;
         this.getHand = this.getHand.bind(this);
         this.board = [];
-     }
+    }
 
     getName(){
         return this.name;
@@ -135,8 +135,9 @@ class ScoreBoard{
     getHand(){
         return this.cup.getHand();
     }
+    // Score Validity Methods
     valSmStraight(){
-        let hand = this.getHand().sort;
+        let hand = this.getHand().sort();
         hand = hand.toString();
         switch (hand){
             case hand.includes("1,2,3,4"):
@@ -146,6 +147,34 @@ class ScoreBoard{
         }
         return false;
     }
+    valLgStraight(){
+        let hand = this.getHand().sort();
+        hand = hand.toString();
+        if (hand.includes("1,2,3,4,5")) return true;
+        else if (hand.includes("2,3,4,5,6")) return true;
+        return false;
+    }
+    valFullHouse(){
+        let hand = this.getHand().sort();
+        let fullHouse = [0, 0];
+        let die1 = hand[0];
+        let die2 = hand[4];
+        //hand = hand.toString(); // should be "1,1,2,2,2" etc
+        for (let i = 0; i < 5; i++){
+            if (hand[i] == die1) fullHouse[0]++;
+            else if (hand[i] == die2) fullHouse[1]++;
+        }
+        let test = fullHouse.sort();
+        if (test == "2,3") return true;
+        return false;
+        // if (hand[0] == hand[1] == hand[2]) {let hasThree = true;}
+        // else if (hand[0] == hand[1]) {let hasTwo = true;}
+        // if (hand[3] == hand[4]) {let hasTwo = true;}
+        // else if (hand[2] == hand[3] == hand[4]) {let hasThree = true;}
+        // if (hasThree && hasTwo) return true;
+        // return false;
+    }
+    // Scoring
     scoreHand(category){
         let hand = this.getHand();
         let score = 0;
@@ -162,10 +191,14 @@ class ScoreBoard{
             console.log(" - Selected category " + category);
             switch (category){
                 case "full house":
-                    score = 25;
+                    if (this.valFullHouse()) score = 25;
+                    else {
+                        score = 0;
+                        console.log("Not a full house.");
+                    }
                     break;
                 case "small straight":
-                    if (valSmStraight()) score = 30;
+                    if (this.valSmStraight()) score = 30;
                     else console.log("TAKEN, score another.");
                     break;
                 case "large straight":
