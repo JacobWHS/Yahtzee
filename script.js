@@ -48,7 +48,7 @@ class DiceCup{
     
     /* roll all dice 
      * @param: none;
-     * @return: none;
+     * @return: string;
      */
     roll(){
         for (let die = 0; die < 5; die++){
@@ -72,7 +72,7 @@ class DiceCup{
     
     /* check if die is being held 
      * @param: index;
-     * @return: none;
+     * @return: boolean;
      */
     isHeld(index){
         let held = this.hold.includes(index+1);
@@ -81,7 +81,7 @@ class DiceCup{
 
     /* determine dice to reroll with user input 
      * @param: none;
-     * @return: none;
+     * @return: string;
      */
     getHolds(){
         this.resetHolds();
@@ -126,6 +126,7 @@ class ScoreBoard{
         this.cup = cup;
         this.getHand = this.getHand.bind(this);
         this.board = [];
+        this.scored = [];
     }
 
     getName(){
@@ -164,15 +165,36 @@ class ScoreBoard{
             if (hand[i] == die1) fullHouse[0]++;
             else if (hand[i] == die2) fullHouse[1]++;
         }
-        let test = fullHouse.sort();
-        if (test == "2,3") return true;
+        // let test = fullHouse.sort();
+        if (fullHouse.sort() == "2,3") return true;
         return false;
-        // if (hand[0] == hand[1] == hand[2]) {let hasThree = true;}
-        // else if (hand[0] == hand[1]) {let hasTwo = true;}
-        // if (hand[3] == hand[4]) {let hasTwo = true;}
-        // else if (hand[2] == hand[3] == hand[4]) {let hasThree = true;}
-        // if (hasThree && hasTwo) return true;
-        // return false;
+    }
+    valOfAKind(count){
+        let hand = this.getHand().sort();
+        let matchCnt = 0;
+        let die = hand[0];
+        switch (count){
+            case 5: // YAHTZEE!!! or 5 of a kind (same thing)
+                for (let i = 0; i < 5; i++){
+                    if (hand[i] == die) matchCnt++;
+                }
+                if (matchCnt == 5) return true;
+                return false;
+            default:
+                for (let c = 0; c < 5; c++){
+                    matchCnt = 0;
+                    die = hand[c];
+                    for (let i = 0; i < 5; i++){
+                        if (hand[i] == die) matchCnt++;
+                    }
+                }
+                case 3:
+                    if (matchCnt == 3) return true;
+                    return false;
+                case 4:
+                    if (matchCnt == 4) return true;
+                    return false;
+        }
     }
     // Scoring
     scoreHand(category){
@@ -189,31 +211,61 @@ class ScoreBoard{
         }
         else {
             console.log(" - Selected category " + category);
-            switch (category){
-                case "full house":
-                    if (this.valFullHouse()) score = 25;
-                    else {
-                        score = 0;
-                        console.log("Not a full house.");
-                    }
-                    break;
-                case "small straight":
-                    if (this.valSmStraight()) score = 30;
-                    else console.log("TAKEN, score another.");
-                    break;
-                case "large straight":
-                    score = 40;
-                    break;
-                case "yahtzee":
-                    score = 50;
-                    break;
-                case "three of a kind":
-                case "four of a kind":
-                case "chance":
-                    score = this.addUpDice(hand);
-                // default: // This is chance, 3 and 4 of a kind.
-                //     console.log(" - adding " + score);
-                //     break;
+            if (this.scored.includes(category)){
+                score = -1;
+                console.log("A " + category + " has already been scored.");
+            }
+            if (score != -1){
+                switch (category){
+                    case "full house":
+                        if (this.valFullHouse()) {
+                            score = 25;
+                            this.scored.push(category);
+                        }
+                        else {
+                            score = 0;
+                            console.log("Not a " + category + ".");
+                        }
+                        break;
+                    case "small straight":
+                        if (this.valSmStraight()) {
+                            score = 30;
+                            this.scored.push(category);
+                        }
+                        else {
+                            score = 0;
+                            console.log("Not a " + category + ".");
+                        }
+                        break;
+                    case "large straight":
+                        if (this.valLgStraight()) {
+                            score = 40;
+                            this.scored.push(category);
+                        }
+                        else {
+                            score = 0;
+                            console.log("Not a " + category + ".");
+                        }
+                        break;
+                    case "yahtzee":
+                        score = 50;
+                        break;
+                    case "three of a kind":
+                        let ofAK = 3;
+                    case "four of a kind":
+                        ofAK = 4;
+                        if (this.valOfAKind(ofAK)) {
+                            score = this.addUpDice(hand);
+                            this.scored.push(category);
+                        }
+                        else {
+                            score = 0;
+                            console.log("Not a " + category + ".");
+                        }
+                    case "chance":
+                        score = this.addUpDice(hand);
+                        this.scored.push(category);
+                }
             }
         }
         let newScore = [category, score];
