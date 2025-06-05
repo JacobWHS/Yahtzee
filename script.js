@@ -194,26 +194,44 @@ class ScoreBoard{
                     if (this.valFullHouse()) score = 25;
                     else {
                         score = 0;
-                        console.log("Not a full house.");
+                        console.log("Not a " + category + ".");
                     }
                     break;
                 case "small straight":
-                    if (this.valSmStraight()) score = 30;
-                    else console.log("TAKEN, score another.");
+                    if (this.valSmStraight()) {
+                        score = 30;
+                    }
+                    else {
+                        score = 0;
+                        console.log("Not a " + category + ".");
+                    }
                     break;
                 case "large straight":
-                    score = 40;
+                    if (this.valLgStraight()) {
+                        score = 40;
+                    }
+                    else {
+                        score = 0;
+                        console.log("Not a " + category + ".");
+                    }
                     break;
                 case "yahtzee":
                     score = 50;
                     break;
-                case "three of a kind":
-                case "four of a kind":
+                case category.includes("of a kind"): 
+                    let ofAK = 3;
+                    case "four of a kind":
+                        ofAK = 4;
+                    if (this.valOfAKind(ofAK)) {
+                        score = this.addUpDice(hand);
+                    }
+                    else {
+                        score = 0;
+                        console.log("Not a " + category + ".");
+                    }
+                    break;
                 case "chance":
                     score = this.addUpDice(hand);
-                // default: // This is chance, 3 and 4 of a kind.
-                //     console.log(" - adding " + score);
-                //     break;
             }
         }
         let newScore = [category, score];
