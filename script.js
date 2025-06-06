@@ -24,7 +24,7 @@ function main(){
         while (!categories.includes(category)){
             category = prompt("Invalid category, please try again.");
         }
-        while (!jacob.scoreHand(category)){
+        while (!jacob.scoreHand(category) && category != "yahtzee"){
             category = prompt("This category has already been scored, try another.");
         }
     }
@@ -174,6 +174,35 @@ class ScoreBoard{
         // if (hasThree && hasTwo) return true;
         // return false;
     }
+    valOfAKind(count){
+        let hand = this.getHand().sort();
+        let matchCnt = 0;
+        let die = hand[0];
+        switch (count){
+            case 5: // YAHTZEE!!! or 5 of a kind (same thing)
+                for (let i = 0; i < 5; i++){
+                    if (hand[i] == die) matchCnt++;
+                }
+                if (matchCnt == 5) return true;
+                return false;
+            default:
+                for (let c = 0; c < 5; c++){
+                    matchCnt = 0;
+                    die = hand[c];
+                    for (let i = 0; i < 5; i++){
+                        if (hand[i] == die) matchCnt++;
+                    }
+                }
+                if (category == 3){
+                    if (matchCnt == 3) return true;
+                    return false;
+                }
+                if (category == 4){
+                    if (matchCnt == 4) return true;
+                    return false;
+                }
+        }
+    }
     // Scoring
     scoreHand(category){
         let hand = this.getHand();
@@ -189,6 +218,7 @@ class ScoreBoard{
         }
         else {
             console.log(" - Selected category " + category);
+            let ofAK = 3;
             switch (category){
                 case "full house":
                     if (this.valFullHouse()) score = 25;
@@ -219,9 +249,7 @@ class ScoreBoard{
                     score = 50;
                     break;
                 case category.includes("of a kind"): 
-                    let ofAK = 3;
-                    case "four of a kind":
-                        ofAK = 4;
+                    if (category == "four of a kind") ofAK = 4;
                     if (this.valOfAKind(ofAK)) {
                         score = this.addUpDice(hand);
                     }
