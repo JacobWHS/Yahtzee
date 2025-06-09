@@ -43,6 +43,8 @@ class DiceCup{
      * @return: hand array;
      */
     getHand(){
+        // return [5,5,5,5,1]; UNCOMMENT ONLY FOR TESTING PURPOSES, USED TO DEBUG THREE OF A KIND AND FOUR OF A KIND (5,5,5,5,5 WAS USED FOR YAHTZEE)
+        return [1,2,3,4,5];
         return this.hand;
     }
     
@@ -139,12 +141,10 @@ class ScoreBoard{
     valSmStraight(){
         let hand = this.getHand().sort();
         hand = hand.toString();
-        switch (hand){
-            case hand.includes("1,2,3,4"):
-            case hand.includes("2,3,4,5"):
-            case hand.includes("3,4,5,6"):
-                return true;
-        }
+        if (hand.includes("1,2,3,4")) return true;
+        else if (hand.includes("2,3,4,5")) return true;
+        else if (hand.includes("3,4,5,6")) return true;
+        console.log("hand " + hand);
         return false;
     }
     valLgStraight(){
@@ -193,14 +193,16 @@ class ScoreBoard{
                         if (hand[i] == die) matchCnt++;
                     }
                 }
-                if (category == 3){
-                    if (matchCnt == 3) return true;
+                console.log("MatchCnt " + matchCnt);
+                if (count == 3){
+                    if (matchCnt <= 3) return true;
                     return false;
                 }
-                if (category == 4){
-                    if (matchCnt == 4) return true;
+                if (count == 4){
+                    if (matchCnt <= 4) return true;
                     return false;
                 }
+                break;
         }
     }
     // Scoring
@@ -218,7 +220,6 @@ class ScoreBoard{
         }
         else {
             console.log(" - Selected category " + category);
-            let ofAK = 3;
             switch (category){
                 case "full house":
                     if (this.valFullHouse()) score = 25;
@@ -246,13 +247,21 @@ class ScoreBoard{
                     }
                     break;
                 case "yahtzee":
-                    score = 50;
-                    break;
-                case category.includes("of a kind"): 
-                    if (category == "four of a kind") ofAK = 4;
-                    if (this.valOfAKind(ofAK)) {
-                        score = this.addUpDice(hand);
+                    if (this.valOfAKind(5)) score = 50;
+                    else {
+                        score = 0;
+                        console.log("Not a " + category + ".");
                     }
+                    break;
+                case "four of a kind": 
+                    if (this.valOfAKind(4)) score = this.addUpDice(hand);
+                    else {
+                        score = 0;
+                        console.log("Not a " + category + ".");
+                    }
+                    break;
+                case "three of a kind": 
+                    if (this.valOfAKind(3)) score = this.addUpDice(hand);
                     else {
                         score = 0;
                         console.log("Not a " + category + ".");
