@@ -44,7 +44,6 @@ class DiceCup{
      */
     getHand(){
         // return [5,5,5,5,1]; UNCOMMENT ONLY FOR TESTING PURPOSES, USED TO DEBUG THREE OF A KIND AND FOUR OF A KIND (5,5,5,5,5 WAS USED FOR YAHTZEE)
-        return [2,3,4,5,6];
         return this.hand;
     }
     
@@ -77,7 +76,7 @@ class DiceCup{
      * @return: none;
      */
     isHeld(index){
-        let held = this.hold.includes(index+1);
+        let held = this.hold.includes(index + 1);
         return held;
     }
 
@@ -87,11 +86,12 @@ class DiceCup{
      */
     getHolds(){
         this.resetHolds();
-        let which = prompt("Hold which? (Format: 1,2,4 or 0 to reroll all)");
+        let which = prompt("Hold which? (Format: 1,2,4. 0 to reroll all, n to reroll none.)");
         let holds = which.split(',').map(Number);
-        if (holds[0]!= 0 || holds.length>0) {
+        if (which == "n") holds = [1,2,3,4,5];
+        if (holds[0] != 0 || holds.length > 0) {
             this.hold = holds;
-            // console.log("Holding: "+this.hold.toString());
+            // console.log("Holding: " + this.hold.toString());
         }
         // else console.log("No holds.")
         return this.reroll();
@@ -103,7 +103,7 @@ class DiceCup{
      */
     resetHolds() { 
         for (let holds = 0; holds < this.hold.length; holds++){
-           this.hold.splice(holds,1); 
+           this.hold.splice(holds, 1); 
         }
     }
 
@@ -286,8 +286,8 @@ class ScoreBoard{
         let score = 0;
         console.log("addUpDice():");
         for (let die = 0; die < 5; die++){
-            console.log(" - addUpDice() for loop");
-            console.log(" - add Up Dice " + die + " - " + hand[die]);
+            // console.log(" - addUpDice() for loop");
+            // console.log(" - add Up Dice " + die + " - " + hand[die]);
             score += hand[die];
         }
         return score;
