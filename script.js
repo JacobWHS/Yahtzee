@@ -15,11 +15,11 @@ function main(){
 
     function playRound(round, cup, board) {  // Note: defining function inside Main to provide access to objects
         console.log("Round " + round + " of " + rounds + " \n");
-        console.log(" - " + board.getName() + " roll 1: "+ cup.roll());
-        console.log(" - " + board.getName() + " reroll 1: "+ cup.getHolds());
-        console.log(" - " + board.getName() + " reroll 2: "+ cup.getHolds());
+        console.log(" - " + board.getName() + " roll 1: " + cup.roll());
+        console.log(" - " + board.getName() + " reroll 1: " + cup.getHolds());
+        console.log(" - " + board.getName() + " reroll 2: " + cup.getHolds());
         cup.resetHolds();
-        console.log("Your hand to score: "+ cup.getHand().toString());  
+        console.log("Your hand to score: " + cup.getHand().toString());  
         let category = prompt("Which category? ones, etc");
         while (!categories.includes(category)){
             category = prompt("Invalid category, please try again.");
@@ -44,7 +44,7 @@ class DiceCup{
      */
     getHand(){
         // return [5,5,5,5,1]; UNCOMMENT ONLY FOR TESTING PURPOSES, USED TO DEBUG THREE OF A KIND AND FOUR OF A KIND (5,5,5,5,5 WAS USED FOR YAHTZEE)
-        return [1,2,3,4,5];
+        return [2,3,4,5,6];
         return this.hand;
     }
     
@@ -238,9 +238,7 @@ class ScoreBoard{
                     }
                     break;
                 case "large straight":
-                    if (this.valLgStraight()) {
-                        score = 40;
-                    }
+                    if (this.valLgStraight()) score = 40;
                     else {
                         score = 0;
                         console.log("Not a " + category + ".");
