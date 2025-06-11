@@ -3,14 +3,14 @@ const categories = ["ones","twos","threes","fours","fives","sixes","upper sectio
 /* Runs the game */
 function main(){
     let rounds = 14; // should be 14 when done testing
-    const cup1 = new DiceCup("cup1"); // Proper syntax = const if we always point to the same object
-    // const cup2 = new DiceCup("cup2"); 
+    const cup1 = new DiceCup("cup1"); // Jacob's Cup // Proper syntax = const if we always point to the same object
+    const cup2 = new DiceCup("cup2"); // Bram's Cup
     const jacob = new ScoreBoard("jacob", cup1);
-    // const bram = new ScoreBoard("bram", cup2);
+    const bram = new ScoreBoard("bram", cup2);
     // If multiplayer, need to define a collection for the objects; leave off for now 
     for (let round = 1; round <= rounds; round++){ 
-        playRound(round,cup1,jacob);
-        // playRound(round,cup2,bram);
+        playRound(round, cup1, jacob);
+        playRound(round, cup2, bram);
     }
 
     function playRound(round, cup, board) {  // Note: defining function inside Main to provide access to objects
@@ -33,8 +33,8 @@ function main(){
 
 /* Class definition for DiceCup */
 class DiceCup{
-    constructor(name){
-        this.name = name;
+    constructor(cup){
+        this.cup = cup;
         this.hand = [0, 0, 0, 0, 0];
         this.hold = [];
     }
@@ -213,9 +213,13 @@ class ScoreBoard{
             return false;
         }
         else if (categories.indexOf(category) < 6) {
-            let counting = categories.indexOf(category)+1;
+            let counting = categories.indexOf(category) + 1;
             for (let die = 0; die < 5; die++){
-                if (hand[die] == counting) score += counting;
+                console.log(" - Counting " + counting);
+                if (hand[die] == counting) {
+                    
+                    score += counting;
+                }
             }
         }
         else {
