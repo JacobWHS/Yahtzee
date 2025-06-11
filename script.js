@@ -34,6 +34,7 @@ function main(){
 /* Class definition for DiceCup */
 class DiceCup{
     constructor(cup){
+        this.name = this.getName.bind(this);
         this.cup = cup;
         this.hand = [0, 0, 0, 0, 0];
         this.hold = [];
