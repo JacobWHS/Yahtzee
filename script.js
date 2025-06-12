@@ -8,9 +8,12 @@ function main(){
     const jacob = new ScoreBoard("jacob", cup1);
     const bram = new ScoreBoard("bram", cup2);
     // If multiplayer, need to define a collection for the objects; leave off for now 
+    let player = "jacob";
     for (let round = 1; round <= rounds; round++){ 
-        playRound(round, cup1, jacob);
-        playRound(round, cup2, bram);
+        player = "bram";
+        playRound(round, cup1, player);
+        player = "bram";
+        playRound(round, cup2, player);
     }
 
     function playRound(round, cup, board) {  // Note: defining function inside Main to provide access to objects
@@ -24,6 +27,7 @@ function main(){
         while (!categories.includes(category)){
             category = prompt("Invalid category, please try again.");
         }
+        // swap below to player soon
         while (!jacob.scoreHand(category) && category != "yahtzee"){
             category = prompt("This category has already been scored, try another.");
         }
@@ -34,7 +38,7 @@ function main(){
 /* Class definition for DiceCup */
 class DiceCup{
     constructor(cup){
-        this.name = this.getName.bind(this);
+        // this.name = this.getName.bind(this);
         this.cup = cup;
         this.hand = [0, 0, 0, 0, 0];
         this.hold = [];
@@ -44,7 +48,7 @@ class DiceCup{
      * @return: hand array;
      */
     getHand(){
-        // return [5,5,5,5,1]; UNCOMMENT ONLY FOR TESTING PURPOSES, USED TO DEBUG THREE OF A KIND AND FOUR OF A KIND (5,5,5,5,5 WAS USED FOR YAHTZEE)
+        return [5,3,5,3,5]; // UNCOMMENT ONLY FOR TESTING PURPOSES, USED TO DEBUG THREE OF A KIND AND FOUR OF A KIND (5,5,5,5,5 WAS USED FOR YAHTZEE)
         return this.hand;
     }
     
