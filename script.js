@@ -1,8 +1,8 @@
-const categories = ["ones","twos","threes","fours","fives","sixes","upper section bonus","three of a kind","four of a kind","full house","small straight","large straight","chance","yahtzee"];
+const categories = ["ones","twos","threes","fours","fives","sixes","three of a kind","four of a kind","full house","small straight","large straight","chance","yahtzee"];
 
 /* Runs the game */
 function main(){
-    let rounds = 14; // should be 14 when done testing
+    let rounds = 13;
     let pcount = parseInt(prompt("How many people will be playing?"));
     let players = [];
     for (let p = 0; p < pcount; p++){
@@ -31,14 +31,20 @@ function main(){
         while (!board.scoreHand(category) && category != "yahtzee"){
             category = prompt("This category has already been scored, try another.");
         }
+    let scores = [];
+    for (let p = 0; p < pcount; p++){ // sorting attempt ????
+        scores.push(board.getScore()); // this doesn't work, tried ScoreBoard(players[p]) but it cannot be called w/o a new... stumped here.
+    }
+    console.log("SORTED SCORES " + scores.sort(function(a, b){return b-a})); // this is supposedly greatest to least sorted? unsure...
+    // maybe get position 0 and their name, then declare who won idk
     }
     
 }
 
 /* Class definition for DiceCup */
 class DiceCup{
-    constructor(){
-        // this.name = this.getName.bind(this);
+    constructor(name){
+        this.name = name;
         this.hand = [0, 0, 0, 0, 0];
         this.hold = [];
     }
@@ -47,7 +53,7 @@ class DiceCup{
      * @return: hand array;
      */
     getHand(){
-        //return [5,3,5,3,5]; // UNCOMMENT ONLY FOR TESTING PURPOSES, USED TO DEBUG THREE OF A KIND AND FOUR OF A KIND (5,5,5,5,5 WAS USED FOR YAHTZEE)
+        return [5,5,5,5,5]; // UNCOMMENT ONLY FOR TESTING PURPOSES, USED TO DEBUG THREE OF A KIND AND FOUR OF A KIND (5,5,5,5,5 WAS USED FOR YAHTZEE)
         return this.hand;
     }
     
@@ -90,7 +96,7 @@ class DiceCup{
      */
     getHolds(){
         this.resetHolds();
-        let which = prompt("Hold which? (Format: 1,2,4. 0 to reroll all, n to reroll none.)");
+        let which = prompt(this.name.toUpperCase() + ", Hold which? (Format: 1,2,4. 0 to reroll all, n to reroll none.)");
         let holds = which.split(',').map(Number);
         if (which == "n") holds = [1,2,3,4,5];
         if (holds[0] != 0 || holds.length > 0) {
@@ -129,9 +135,11 @@ class DiceCup{
 class ScoreBoard{
     constructor(name){
         this.name = name;
-        this.cup = new DiceCup();
+        this.cup = new DiceCup(name);
         this.getHand = this.getHand.bind(this);
         this.board = [];
+        this.yahtzees = 0;
+        this.getScore = 0;
     }
 
     getName(){
@@ -249,7 +257,14 @@ class ScoreBoard{
                     }
                     break;
                 case "yahtzee":
-                    if (this.valOfAKind(5)) score = 50;
+                    if (this.valOfAKind(5)) {
+                        score = 50;
+                        if (this.yahtzees > 0) {
+                            score += 100; 
+                            console.log("%c+100 BONUS!", "color: blue; font-size:15px;");
+                        }
+                        this.yahtzees++;
+                    }
                     else {
                         score = 0;
                         console.log("Not a " + category + ".");
@@ -274,10 +289,11 @@ class ScoreBoard{
             }
         }
         let newScore = [category, score];
-        // console.log("Scoring: " + category + " Score: " + score);
+        this.getScore += score
         this.board.push(newScore);
-        let latest = this.board.length-1;
+        let latest = this.board.length - 1;
         console.log("Scored: " + this.board[latest].toString());
+        console.log(this.name.toUpperCase() + " " + this.getScore + "pts.");
         return true;
     }
     hasCategory(category){
