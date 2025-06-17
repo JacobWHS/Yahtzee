@@ -162,10 +162,10 @@ class ScoreBoard{
                 if (matchCnt == 5) return true;
                 return false;
             case 4: // 4 of a kind
-                if (matchCnt == 4) return true;
+                if (matchCnt >= 4) return true;
                 return false;
             case 3: // 3 of a kind
-                if (matchCnt == 3) return true;
+                if (matchCnt >= 3) return true;
                 return false;
         }
     }
