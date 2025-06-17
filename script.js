@@ -145,7 +145,7 @@ class ScoreBoard{
         // if (hasThree && hasTwo) return true;
         // return false;
     }
-    valOfAKind(claim){
+     valOfAKind(claim){
         let hand = this.getHand();
         let freq = [0,0,0,0,0,0];
         for (let d = 0; d<5; d++){
