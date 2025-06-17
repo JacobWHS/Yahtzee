@@ -145,36 +145,32 @@ class ScoreBoard{
         // if (hasThree && hasTwo) return true;
         // return false;
     }
-    valOfAKind(count){
+    valOfAKind(claim){
         let hand = this.getHand().sort();
         let matchCnt = 0;
         let die = hand[0];
-        switch (count){
+        let freq = {0,0,0,0,0,0};
+        for (let d = 0; d<5; d++){
+            freq[hand[d]]++;
+        }
+        for (let d = 1; d < 5; d++){
+            if (freq[d] == 5) matchCnt = 5;
+            else if (freq[d] >=4) matchCnt = 4;
+            else if (freq[d] >=3) matchCnt = 3;
+        }
+        switch (claim){
             case 5: // YAHTZEE!!! or 5 of a kind (same thing)
-                for (let i = 0; i < 5; i++){
-                    if (hand[i] == die) matchCnt++;
-                }
                 if (matchCnt == 5) return true;
                 return false;
-            default:
-                for (let c = 0; c < 5; c++){
-                    matchCnt = 0;
-                    die = hand[c];
-                    for (let i = 0; i < 5; i++){
-                        if (hand[i] == die) matchCnt++;
-                    }
-                }
-                if (count == 3){
-                    if (matchCnt >= 3) return true;
-                    return false;
-                }
-                if (count == 4){
-                    if (matchCnt >= 4) return true;
-                    return false;
-                }
-                break;
+            case 4: // 4 of a kind
+                if (matchCnt == 4) return true;
+                return false;
+            case 3: // 3 of a kind
+                if (matchCnt == 3) return true;
+                return false;
         }
     }
+
     // Scoring
     scoreHand(category){
         let hand = this.getHand();
