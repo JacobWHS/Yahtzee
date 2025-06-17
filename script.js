@@ -287,7 +287,7 @@ class ScoreBoard{
 
 /* Runs the game */
 function main(){
-    let rounds = 2;
+    let rounds = 13;
     let pcount = parseInt(prompt("How many people will be playing?"));
     let players = [];
     let pname = "";
