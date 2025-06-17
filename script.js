@@ -149,7 +149,7 @@ class ScoreBoard{
         let hand = this.getHand().sort();
         let matchCnt = 0;
         let die = hand[0];
-        let freq = {0,0,0,0,0,0};
+        let freq = [0,0,0,0,0,0];
         for (let d = 0; d<5; d++){
             freq[hand[d]]++;
         }
