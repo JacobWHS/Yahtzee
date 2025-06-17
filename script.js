@@ -165,11 +165,11 @@ class ScoreBoard{
                     }
                 }
                 if (count == 3){
-                    if (matchCnt <= 3) return true;
+                    if (matchCnt >= 3) return true;
                     return false;
                 }
                 if (count == 4){
-                    if (matchCnt <= 4) return true;
+                    if (matchCnt >= 4) return true;
                     return false;
                 }
                 break;
