@@ -249,7 +249,7 @@ class ScoreBoard{
         this.board.push(newScore);
         let latest = this.board.length - 1;
         console.log("Scored: " + this.board[latest].toString());
-        console.log(this.name.toUpperCase() + " " + this.getScore + "pts.");
+        console.log(this.name.toUpperCase() + " " + this.getScore + " pts.");
         return true;
     }
     hasCategory(category){
