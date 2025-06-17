@@ -1,30 +1,97 @@
 const categories = ["ones","twos","threes","fours","fives","sixes","three of a kind","four of a kind","full house","small straight","large straight","chance","yahtzee"];
 
-/* Runs the game */
-function main(){
-    let rounds = 13;
-    let pcount = parseInt(prompt("How many people will be playing?"));
-    let players = [];
-    let pname = "";
-    for (let p = 0; p < pcount; p++){
-        pname = prompt("What's player" + (p + 1) + "'s name?");
-        newBoard = new ScoreBoard(pname);
-        players.push(newBoard);
+/* Class definition for DiceCup */
+class DiceCup{
+    constructor(name){
+        this.name = name;
+        this.hand = [0, 0, 0, 0, 0];
+        this.hold = [];
     }
-    for (let round = 1; round <= rounds; round++){ 
-        for (let p = 0; p < pcount; p++){
-            playRound(round, players[p]);
-        }
+    /* get Hand 
+     * @param: none;
+     * @return: hand array;
+     */
+    getHand(){
+        //return [5,5,5,5,5]; // UNCOMMENT ONLY FOR TESTING PURPOSES, USED TO DEBUG THREE OF A KIND AND FOUR OF A KIND (5,5,5,5,5 WAS USED FOR YAHTZEE)
+        return this.hand;
     }
-    let scores = [];
-    for (let p = 0; p < pcount; p++){
-        scores.push(p,players[p].this.scoreTotal());
-        }
-    scores.sort(function(a, b){return b-a});
-    console.log("Leaderboard (Player: Score)" +  scores.toString())
     
-    /* Class Definition for ScoreBoard */
-    class ScoreBoard{
+    /* roll all dice 
+     * @param: none;
+     * @return: none;
+     */
+    roll(){
+        for (let die = 0; die < 5; die++){
+            this.hand[die] = Math.floor(Math.random() * 6) + 1;
+        }
+        return this.hand.toString();
+    }
+
+     /* roll held dice 
+     * @param: none;
+     * @return: none;
+     */
+    reroll(){
+        for (let die = 0; die < 5; die++){
+            if (!this.isHeld(die)){
+                this.hand[die] = Math.floor(Math.random() * 6) + 1;
+            }
+        }
+        return this.hand.toString();
+    }
+    
+    /* check if die is being held 
+     * @param: index;
+     * @return: none;
+     */
+    isHeld(index){
+        let held = this.hold.includes(index + 1);
+        return held;
+    }
+
+    /* determine dice to reroll with user input 
+     * @param: none;
+     * @return: none;
+     */
+    getHolds(){
+        this.resetHolds();
+        let which = prompt(this.name.toUpperCase() + ", Hold which? (Format: 1,2,4. 0 to reroll all, n to reroll none.)");
+        let holds = which.split(',').map(Number);
+        if (which == "n") holds = [1,2,3,4,5];
+        if (holds[0] != 0 || holds.length > 0) {
+            this.hold = holds;
+            // console.log("Holding: " + this.hold.toString());
+        }
+        // else console.log("No holds.")
+        return this.reroll();
+    }
+    
+    /* clear all holds 
+     * @param: none;
+     * @return: none;
+     */
+    resetHolds() { 
+        for (let holds = 0; holds < this.hold.length; holds++){
+           this.hold.splice(holds, 1); 
+        }
+    }
+
+
+    /* toggle hold state based on index, so die 1 is at index 0 */
+    toggleHold(index){
+        let position = this.hold.indexOf(index);
+        if (position != -1){
+            this.hold.splice(position);
+        }
+        else{
+            this.hold.push(index);
+        }
+    }    
+
+} // End of Class Definition for DiceCup
+
+/* Class Definition for ScoreBoard */
+class ScoreBoard{
     constructor(name){
         this.name = name;
         this.cup = new DiceCup(name);
@@ -205,17 +272,52 @@ function main(){
         return score;
     }
     /* mbm */
-    scoreTotal(){
+    calcTotalScore(){
         let total = 0;
         for (let category = 0; category < this.board.length; category++){
             total+= this.board[category][1]
-            console.log("Added "+this.board[category][0]+": "+this.board[category][1] + "to total: " + total);
+            // console.log("Added "+this.board[category][0]+": "+this.board[category][1] + "to total: " + total);
         }
+        this.scoreTotal = total;
         return total;
         }
     } // End of ScoreBoard Class Definition
 
-    function playRound(round, board) {  // Note: defining function inside Main to provide access to objects
+
+
+/* Runs the game */
+function main(){
+    let rounds = 2;
+    let pcount = parseInt(prompt("How many people will be playing?"));
+    let players = [];
+    let pname = "";
+    for (let p = 0; p < pcount; p++){
+        pname = prompt("What's player " + (p + 1) + "'s name?");
+        newBoard = new ScoreBoard(pname);
+        players.push(newBoard);
+    }
+    for (let round = 1; round <= rounds; round++){ 
+        for (let p = 0; p < pcount; p++){
+            playRound(round, players[p]);
+        }
+    }
+    console.log("Final Scores:");
+    for (let p = 0; p < pcount; p++){
+        players[p].calcTotalScore(); 
+        console.log(players[p].getName() + ": " + players[p].scoreTotal + "pts.");          
+    }
+    console.log("Winning player is: " + findWinner(players));
+
+function findWinner(players){
+    let scores = [];
+    for (let p = 0; p < players.length; p++){
+        scores.push([players[p].getName(), players[p].scoreTotal]);
+    }
+    scores.sort((a, b) => b[1] - a[1]); // sort by score descending
+    return (scores[0][0] + " with " + scores[0][1] + "pts.");
+}
+
+function playRound(round, board) {  // Note: defining function inside Main to provide access to objects
         let cup = board.cup;
         console.log("Round " + round + " of " + rounds + " \n");
         console.log(" - " + board.getName() + " roll 1: " + cup.roll());
@@ -232,96 +334,5 @@ function main(){
             category = prompt("This category has already been scored, try another.");
         }
     }
-
-/* Class definition for DiceCup */
-class DiceCup{
-    constructor(name){
-        this.name = name;
-        this.hand = [0, 0, 0, 0, 0];
-        this.hold = [];
-    }
-    /* get Hand 
-     * @param: none;
-     * @return: hand array;
-     */
-    getHand(){
-        //return [5,5,5,5,5]; // UNCOMMENT ONLY FOR TESTING PURPOSES, USED TO DEBUG THREE OF A KIND AND FOUR OF A KIND (5,5,5,5,5 WAS USED FOR YAHTZEE)
-        return this.hand;
-    }
-    
-    /* roll all dice 
-     * @param: none;
-     * @return: none;
-     */
-    roll(){
-        for (let die = 0; die < 5; die++){
-            this.hand[die] = Math.floor(Math.random() * 6) + 1;
-        }
-        return this.hand.toString();
-    }
-
-     /* roll held dice 
-     * @param: none;
-     * @return: none;
-     */
-    reroll(){
-        for (let die = 0; die < 5; die++){
-            if (!this.isHeld(die)){
-                this.hand[die] = Math.floor(Math.random() * 6) + 1;
-            }
-        }
-        return this.hand.toString();
-    }
-    
-    /* check if die is being held 
-     * @param: index;
-     * @return: none;
-     */
-    isHeld(index){
-        let held = this.hold.includes(index + 1);
-        return held;
-    }
-
-    /* determine dice to reroll with user input 
-     * @param: none;
-     * @return: none;
-     */
-    getHolds(){
-        this.resetHolds();
-        let which = prompt(this.name.toUpperCase() + ", Hold which? (Format: 1,2,4. 0 to reroll all, n to reroll none.)");
-        let holds = which.split(',').map(Number);
-        if (which == "n") holds = [1,2,3,4,5];
-        if (holds[0] != 0 || holds.length > 0) {
-            this.hold = holds;
-            // console.log("Holding: " + this.hold.toString());
-        }
-        // else console.log("No holds.")
-        return this.reroll();
-    }
-    
-    /* clear all holds 
-     * @param: none;
-     * @return: none;
-     */
-    resetHolds() { 
-        for (let holds = 0; holds < this.hold.length; holds++){
-           this.hold.splice(holds, 1); 
-        }
-    }
-
-
-    /* toggle hold state based on index, so die 1 is at index 0 */
-    toggleHold(index){
-        let position = this.hold.indexOf(index);
-        if (position != -1){
-            this.hold.splice(position);
-        }
-        else{
-            this.hold.push(index);
-        }
-    }    
-
-} // End of Class Definition
-
 
 }
