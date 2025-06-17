@@ -1,28 +1,4 @@
-/* Runs the game */
-function main(){
-    let rounds = 1; // should be 14 when done testing
-    const cup1 = new DiceCup("cup1"); // Proper syntax = const if we always point to the same object
-    // const cup2 = new DiceCup("cup2"); 
-    const jacob = new ScoreBoard("jacob", cup1);
-    // const bram = new ScoreBoard("bram", cup2);
-    // If multiplayer, need to define a collection for the objects; leave off for now 
-    for (let round = 1; round <= rounds; round++){ 
-        playRound(round,cup1,jacob);
-        // playRound(round,cup2,bram);
-    }
-
-    function playRound(round, cup, board) {  // Note: defining function inside Main to provide access to objects
-        console.log("Round " + round + " of " + rounds + " \n");
-        console.log(board.getName() + " roll 1: "+ cup.roll());
-        console.log(board.getName() + " reroll 1: "+ cup.getHolds());
-        console.log(board.getName() + " reroll 2: "+ cup.getHolds());
-        cup.resetHolds();
-        console.log("Your hand to score: "+ cup.getHand().toString());  
-        let category = prompt("Which category? ones, etc");
-        jacob.scoreHand(category);
-    }
-    
-}
+const categories = ["ones","twos","threes","fours","fives","sixes","three of a kind","four of a kind","full house","small straight","large straight","chance","yahtzee"];
 
 /* Class definition for DiceCup */
 class DiceCup{
@@ -36,6 +12,7 @@ class DiceCup{
      * @return: hand array;
      */
     getHand(){
+        //return [5,5,5,5,5]; // UNCOMMENT ONLY FOR TESTING PURPOSES, USED TO DEBUG THREE OF A KIND AND FOUR OF A KIND (5,5,5,5,5 WAS USED FOR YAHTZEE)
         return this.hand;
     }
     
@@ -68,7 +45,7 @@ class DiceCup{
      * @return: none;
      */
     isHeld(index){
-        let held = this.hold.includes(index+1);
+        let held = this.hold.includes(index + 1);
         return held;
     }
 
@@ -78,13 +55,14 @@ class DiceCup{
      */
     getHolds(){
         this.resetHolds();
-        let which = prompt("Hold which? 1,2,4 or 0");
+        let which = prompt(this.name.toUpperCase() + ", Hold which? (Format: 1,2,4. 0 to reroll all, n to reroll none.)");
         let holds = which.split(',').map(Number);
-        if (holds[0]!= 0 || holds.length>0) {
+        if (which == "n") holds = [1,2,3,4,5];
+        if (holds[0] != 0 || holds.length > 0) {
             this.hold = holds;
-            console.log("Holding: "+this.hold.toString());
+            // console.log("Holding: " + this.hold.toString());
         }
-        else console.log("No holds.")
+        // else console.log("No holds.")
         return this.reroll();
     }
     
@@ -94,7 +72,7 @@ class DiceCup{
      */
     resetHolds() { 
         for (let holds = 0; holds < this.hold.length; holds++){
-           this.hold.splice(holds,1); 
+           this.hold.splice(holds, 1); 
         }
     }
 
@@ -110,16 +88,19 @@ class DiceCup{
         }
     }    
 
-} // End of Class Definition
+} // End of Class Definition for DiceCup
 
 /* Class Definition for ScoreBoard */
 class ScoreBoard{
-        constructor(name, cup){
+    constructor(name){
         this.name = name;
-        this.cup = cup;
+        this.cup = new DiceCup(name);
         this.getHand = this.getHand.bind(this);
         this.board = [];
-     }
+        this.yahtzees = 0;
+        this.getScore = 0;
+        this.scoreTotal = 0; // mbm
+    }
 
     getName(){
         return this.name;
@@ -128,20 +109,230 @@ class ScoreBoard{
     getHand(){
         return this.cup.getHand();
     }
-
+    // Score Validity Methods
+    valSmStraight(){
+        let hand = this.getHand().sort();
+        hand = hand.toString();
+        if (hand.includes("1,2,3,4")) return true;
+        else if (hand.includes("2,3,4,5")) return true;
+        else if (hand.includes("3,4,5,6")) return true;
+        return false;
+    }
+    valLgStraight(){
+        let hand = this.getHand().sort();
+        hand = hand.toString();
+        if (hand.includes("1,2,3,4,5")) return true;
+        else if (hand.includes("2,3,4,5,6")) return true;
+        return false;
+    }
+    valFullHouse(){
+        let hand = this.getHand().sort();
+        let fullHouse = [0, 0];
+        let die1 = hand[0];
+        let die2 = hand[4];
+        //hand = hand.toString(); // should be "1,1,2,2,2" etc
+        for (let i = 0; i < 5; i++){
+            if (hand[i] == die1) fullHouse[0]++;
+            else if (hand[i] == die2) fullHouse[1]++;
+        }
+        let test = fullHouse.sort();
+        if (test == "2,3") return true;
+        return false;
+        // if (hand[0] == hand[1] == hand[2]) {let hasThree = true;}
+        // else if (hand[0] == hand[1]) {let hasTwo = true;}
+        // if (hand[3] == hand[4]) {let hasTwo = true;}
+        // else if (hand[2] == hand[3] == hand[4]) {let hasThree = true;}
+        // if (hasThree && hasTwo) return true;
+        // return false;
+    }
+    valOfAKind(count){
+        let hand = this.getHand().sort();
+        let matchCnt = 0;
+        let die = hand[0];
+        switch (count){
+            case 5: // YAHTZEE!!! or 5 of a kind (same thing)
+                for (let i = 0; i < 5; i++){
+                    if (hand[i] == die) matchCnt++;
+                }
+                if (matchCnt == 5) return true;
+                return false;
+            default:
+                for (let c = 0; c < 5; c++){
+                    matchCnt = 0;
+                    die = hand[c];
+                    for (let i = 0; i < 5; i++){
+                        if (hand[i] == die) matchCnt++;
+                    }
+                }
+                if (count == 3){
+                    if (matchCnt <= 3) return true;
+                    return false;
+                }
+                if (count == 4){
+                    if (matchCnt <= 4) return true;
+                    return false;
+                }
+                break;
+        }
+    }
+    // Scoring
     scoreHand(category){
         let hand = this.getHand();
         let score = 0;
-        const categories = ["ones","twos","threes","fours","fives","sixes","upper section bonus","three of a kind","four of a kind","full house","small straight","large straight","chance","yahtzee"];   
-        if (categories.indexOf(category)<6) {
-            let counting = categories.indexOf(category)+1;
-            for (let die = 0; die < 6; die++){
-                if (hand[die] == counting) score += counting;
+        if (this.hasCategory(category)){
+            return false;
+        }
+        else if (categories.indexOf(category) < 6) {
+            let counting = categories.indexOf(category) + 1;
+            for (let die = 0; die < 5; die++){
+                if (hand[die] == counting) {
+                    
+                    score += counting;
+                }
+            }
+        }
+        else {
+            switch (category){
+                case "full house":
+                    if (this.valFullHouse()) score = 25;
+                    else {
+                        score = 0;
+                        console.log("Not a " + category + ".");
+                    }
+                    break;
+                case "small straight":
+                    if (this.valSmStraight()) {
+                        score = 30;
+                    }
+                    else {
+                        score = 0;
+                        console.log("Not a " + category + ".");
+                    }
+                    break;
+                case "large straight":
+                    if (this.valLgStraight()) score = 40;
+                    else {
+                        score = 0;
+                        console.log("Not a " + category + ".");
+                    }
+                    break;
+                case "yahtzee":
+                    if (this.valOfAKind(5)) {
+                        score = 50;
+                        if (this.yahtzees > 0) {
+                            score += 100; 
+                            console.log("%c+100 BONUS!", "color: blue; font-size:15px;");
+                        }
+                        this.yahtzees++;
+                    }
+                    else {
+                        score = 0;
+                        console.log("Not a " + category + ".");
+                    }
+                    break;
+                case "four of a kind": 
+                    if (this.valOfAKind(4)) score = this.addUpDice(hand);
+                    else {
+                        score = 0;
+                        console.log("Not a " + category + ".");
+                    }
+                    break;
+                case "three of a kind": 
+                    if (this.valOfAKind(3)) score = this.addUpDice(hand);
+                    else {
+                        score = 0;
+                        console.log("Not a " + category + ".");
+                    }
+                    break;
+                case "chance":
+                    score = this.addUpDice(hand);
             }
         }
         let newScore = [category, score];
+        this.getScore += score
         this.board.push(newScore);
-        let latest = this.board.length-1;
-        console.log("Scored: "+ this.board[latest].toString());
+        let latest = this.board.length - 1;
+        console.log("Scored: " + this.board[latest].toString());
+        console.log(this.name.toUpperCase() + " " + this.getScore + "pts.");
+        return true;
     }
-} // End of Class Definition
+    hasCategory(category){
+        for (let i = 0; i < this.board.length; i++){ // i = index
+            if (this.board[i].includes(category)) return true;
+        } 
+        return false;
+    }
+    addUpDice(hand){
+        let score = 0;
+        for (let die = 0; die < 5; die++){
+            // console.log(" - addUpDice() for loop");
+            // console.log(" - add Up Dice " + die + " - " + hand[die]);
+            score += hand[die];
+        }
+        return score;
+    }
+    /* mbm */
+    calcTotalScore(){
+        let total = 0;
+        for (let category = 0; category < this.board.length; category++){
+            total+= this.board[category][1]
+            // console.log("Added "+this.board[category][0]+": "+this.board[category][1] + "to total: " + total);
+        }
+        this.scoreTotal = total;
+        return total;
+        }
+    } // End of ScoreBoard Class Definition
+
+
+
+/* Runs the game */
+function main(){
+    let rounds = 2;
+    let pcount = parseInt(prompt("How many people will be playing?"));
+    let players = [];
+    let pname = "";
+    for (let p = 0; p < pcount; p++){
+        pname = prompt("What's player " + (p + 1) + "'s name?");
+        newBoard = new ScoreBoard(pname);
+        players.push(newBoard);
+    }
+    for (let round = 1; round <= rounds; round++){ 
+        for (let p = 0; p < pcount; p++){
+            playRound(round, players[p]);
+        }
+    }
+    console.log("Final Scores:");
+    for (let p = 0; p < pcount; p++){
+        players[p].calcTotalScore(); 
+        console.log(players[p].getName() + ": " + players[p].scoreTotal + "pts.");          
+    }
+    console.log("Winning player is: " + findWinner(players));
+
+function findWinner(players){
+    let scores = [];
+    for (let p = 0; p < players.length; p++){
+        scores.push([players[p].getName(), players[p].scoreTotal]);
+    }
+    scores.sort((a, b) => b[1] - a[1]); // sort by score descending
+    return (scores[0][0] + " with " + scores[0][1] + "pts.");
+}
+
+function playRound(round, board) {  // Note: defining function inside Main to provide access to objects
+        let cup = board.cup;
+        console.log("Round " + round + " of " + rounds + " \n");
+        console.log(" - " + board.getName() + " roll 1: " + cup.roll());
+        console.log(" - " + board.getName() + " reroll 1: " + cup.getHolds());
+        console.log(" - " + board.getName() + " reroll 2: " + cup.getHolds());
+        cup.resetHolds();
+        console.log("Your hand to score: " + cup.getHand().toString());  
+        let category = prompt("Which category? ones, etc");
+        while (!categories.includes(category)){
+            category = prompt("Invalid category, please try again.");
+        }
+        // swap below to player soon
+        while (!board.scoreHand(category) && category != "yahtzee"){
+            category = prompt("This category has already been scored, try another.");
+        }
+    }
+
+}
