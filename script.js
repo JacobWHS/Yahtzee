@@ -147,16 +147,12 @@ class ScoreBoard{
     }
     valOfAKind(claim){
         let hand = this.getHand();
-        let matchCnt = 0;
         let freq = [0,0,0,0,0,0];
         for (let d = 0; d<5; d++){
             freq[hand[d]]++;
         }
-        for (let d = 1; d < 5; d++){
-            if (freq[d] == 5) matchCnt = 5;
-            else if (freq[d] >=4) matchCnt = 4;
-            else if (freq[d] >=3) matchCnt = 3;
-        }
+        freq.sort((a, b) => a - b);
+        let matchCnt = freq[5];
         switch (claim){
             case 5: // YAHTZEE!!! or 5 of a kind (same thing)
                 if (matchCnt == 5) return true;
