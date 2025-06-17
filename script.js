@@ -156,14 +156,11 @@ class ScoreBoard{
         // Jeff's idea: matchCnt = Math.max( freq );
         switch (claim){
             case 5: // YAHTZEE!!! or 5 of a kind (same thing)
-                if (matchCnt == 5) return true;
-                return false;
+                return (matchCnt == 5);
             case 4: // 4 of a kind
-                if (matchCnt >= 4) return true;
-                return false;
+                return (matchCnt >= 4) 
             case 3: // 3 of a kind
-                if (matchCnt >= 3) return true;
-                return false;
+                return (matchCnt >= 3); 
         }
     }
 
