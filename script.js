@@ -153,6 +153,7 @@ class ScoreBoard{
         }
         freq.sort((a, b) => a - b);
         let matchCnt = freq[5];
+        // Jeff's idea: matchCnt = Math.max( freq );
         switch (claim){
             case 5: // YAHTZEE!!! or 5 of a kind (same thing)
                 if (matchCnt == 5) return true;
