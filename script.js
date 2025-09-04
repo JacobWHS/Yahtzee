@@ -1,46 +1,5 @@
 const categories = ["ones","twos","threes","fours","fives","sixes","three of a kind","four of a kind","full house","small straight","large straight","chance","yahtzee"];
 
-/* Runs the game */
-function main(){
-    let rounds = 13;
-    let pcount = parseInt(prompt("How many people will be playing?"));
-    let players = [];
-    for (let p = 0; p < pcount; p++){
-        players.push(new ScoreBoard(prompt("What's player" + (p + 1) + "'s name?")));
-    }
-    // If multiplayer, need to define a collection for the objects; leave off for now 
-    for (let round = 1; round <= rounds; round++){ 
-        for (let p = 0; p < pcount; p++){
-            playRound(round, players[p]);
-        }
-    }
-
-    function playRound(round, board) {  // Note: defining function inside Main to provide access to objects
-        let cup = board.cup;
-        console.log("Round " + round + " of " + rounds + " \n");
-        console.log(" - " + board.getName() + " roll 1: " + cup.roll());
-        console.log(" - " + board.getName() + " reroll 1: " + cup.getHolds());
-        console.log(" - " + board.getName() + " reroll 2: " + cup.getHolds());
-        cup.resetHolds();
-        console.log("Your hand to score: " + cup.getHand().toString());  
-        let category = prompt("Which category? ones, etc");
-        while (!categories.includes(category)){
-            category = prompt("Invalid category, please try again.");
-        }
-        // swap below to player soon
-        while (!board.scoreHand(category) && category != "yahtzee"){
-            category = prompt("This category has already been scored, try another.");
-        }
-    let scores = [];
-    for (let p = 0; p < pcount; p++){ // sorting attempt ????
-        scores.push(board.getScore()); // this doesn't work, tried ScoreBoard(players[p]) but it cannot be called w/o a new... stumped here.
-    }
-    console.log("SORTED SCORES " + scores.sort(function(a, b){return b-a})); // this is supposedly greatest to least sorted? unsure...
-    // maybe get position 0 and their name, then declare who won idk
-    }
-    
-}
-
 /* Class definition for DiceCup */
 class DiceCup{
     constructor(name){
@@ -53,7 +12,7 @@ class DiceCup{
      * @return: hand array;
      */
     getHand(){
-        return [5,5,5,5,5]; // UNCOMMENT ONLY FOR TESTING PURPOSES, USED TO DEBUG THREE OF A KIND AND FOUR OF A KIND (5,5,5,5,5 WAS USED FOR YAHTZEE)
+        //return [5,5,5,5,5]; // UNCOMMENT ONLY FOR TESTING PURPOSES, USED TO DEBUG THREE OF A KIND AND FOUR OF A KIND (5,5,5,5,5 WAS USED FOR YAHTZEE)
         return this.hand;
     }
     
@@ -129,7 +88,7 @@ class DiceCup{
         }
     }    
 
-} // End of Class Definition
+} // End of Class Definition for DiceCup
 
 /* Class Definition for ScoreBoard */
 class ScoreBoard{
@@ -140,6 +99,7 @@ class ScoreBoard{
         this.board = [];
         this.yahtzees = 0;
         this.getScore = 0;
+        this.scoreTotal = 0; // mbm
     }
 
     getName(){
@@ -185,36 +145,25 @@ class ScoreBoard{
         // if (hasThree && hasTwo) return true;
         // return false;
     }
-    valOfAKind(count){
-        let hand = this.getHand().sort();
-        let matchCnt = 0;
-        let die = hand[0];
-        switch (count){
+     valOfAKind(claim){
+        let hand = this.getHand();
+        let freq = [0,0,0,0,0,0,0];
+        for (let d = 0; d<5; d++){
+            freq[hand[d]]++;
+        }
+        freq.sort((a, b) => a - b);
+        let matchCnt = freq[5];
+        // Jeff's idea: matchCnt = Math.max( freq );
+        switch (claim){
             case 5: // YAHTZEE!!! or 5 of a kind (same thing)
-                for (let i = 0; i < 5; i++){
-                    if (hand[i] == die) matchCnt++;
-                }
-                if (matchCnt == 5) return true;
-                return false;
-            default:
-                for (let c = 0; c < 5; c++){
-                    matchCnt = 0;
-                    die = hand[c];
-                    for (let i = 0; i < 5; i++){
-                        if (hand[i] == die) matchCnt++;
-                    }
-                }
-                if (count == 3){
-                    if (matchCnt <= 3) return true;
-                    return false;
-                }
-                if (count == 4){
-                    if (matchCnt <= 4) return true;
-                    return false;
-                }
-                break;
+                return (matchCnt == 5);
+            case 4: // 4 of a kind
+                return (matchCnt >= 4) 
+            case 3: // 3 of a kind
+                return (matchCnt >= 3); 
         }
     }
+
     // Scoring
     scoreHand(category){
         let hand = this.getHand();
@@ -293,7 +242,7 @@ class ScoreBoard{
         this.board.push(newScore);
         let latest = this.board.length - 1;
         console.log("Scored: " + this.board[latest].toString());
-        console.log(this.name.toUpperCase() + " " + this.getScore + "pts.");
+        console.log(this.name.toUpperCase() + " " + this.getScore + " pts.");
         return true;
     }
     hasCategory(category){
@@ -311,4 +260,68 @@ class ScoreBoard{
         }
         return score;
     }
-} // End of Class Definition
+    /* mbm */
+    calcTotalScore(){
+        let total = 0;
+        for (let category = 0; category < this.board.length; category++){
+            total+= this.board[category][1]
+            // console.log("Added "+this.board[category][0]+": "+this.board[category][1] + "to total: " + total);
+        }
+        this.scoreTotal = total;
+        return total;
+        }
+    } // End of ScoreBoard Class Definition
+
+
+
+/* Runs the game */
+function main(){
+    let rounds = 13;
+    let pcount = parseInt(prompt("How many people will be playing?"));
+    let players = [];
+    let pname = "";
+    for (let p = 0; p < pcount; p++){
+        pname = prompt("What's player " + (p + 1) + "'s name?");
+        newBoard = new ScoreBoard(pname);
+        players.push(newBoard);
+    }
+    for (let round = 1; round <= rounds; round++){ 
+        for (let p = 0; p < pcount; p++){
+            playRound(round, players[p]);
+        }
+    }
+    console.log("Final Scores:");
+    for (let p = 0; p < pcount; p++){
+        players[p].calcTotalScore(); 
+        console.log(players[p].getName() + ": " + players[p].scoreTotal + "pts.");          
+    }
+    console.log("Winning player is: " + findWinner(players));
+
+function findWinner(players){
+    let scores = [];
+    for (let p = 0; p < players.length; p++){
+        scores.push([players[p].getName(), players[p].scoreTotal]);
+    }
+    scores.sort((a, b) => b[1] - a[1]); // sort by score descending
+    return (scores[0][0] + " with " + scores[0][1] + "pts.");
+}
+
+function playRound(round, board) {  // Note: defining function inside Main to provide access to objects
+        let cup = board.cup;
+        console.log("Round " + round + " of " + rounds + " \n");
+        console.log(" - " + board.getName() + " roll 1: " + cup.roll());
+        console.log(" - " + board.getName() + " reroll 1: " + cup.getHolds());
+        console.log(" - " + board.getName() + " reroll 2: " + cup.getHolds());
+        cup.resetHolds();
+        console.log("Your hand to score: " + cup.getHand().toString());  
+        let category = prompt("Which category? ones, etc");
+        while (!categories.includes(category)){
+            category = prompt("Invalid category, please try again.");
+        }
+        // swap below to player soon
+        while (!board.scoreHand(category) && category != "yahtzee"){
+            category = prompt("This category has already been scored, try another.");
+        }
+    }
+
+}
